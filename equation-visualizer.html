@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>equation-visualizer</title>
+</head>
+<body>
+	<script>
+		class Point {
+			constructor(x, y, r, c) {
+				this.x = x;
+				this.y = y;
+				this.r = r;
+				this.c = c;
+			}
+			draw() {
+				c.fillStyle = this.c;
+				c.fillRect(this.x, this.y, this.r, this.r);
+			}
+		}
+	</script>
+	<script>
+		const canvas = document.createElement('canvas');
+		const c = canvas.getContext('2d');
+		canvas.width = 640;
+		canvas.height = 480;
+		document.body.append(canvas);
+
+		// THE FUNCTION F(X)
+		function f(x) {
+			return x * x;
+		}
+
+		const points = [];
+		const s = 5;
+		for (let x = -100; x < 100; x++) {
+			points.push(new Point(
+				x * s, f(x) * s, 5, 'white'
+			));
+		}
+		c.fillStyle = 'black';
+		c.fillRect(0, 0, canvas.width, canvas.height);
+		c.translate(canvas.width / 2, canvas.height / 2);
+		c.scale(1, -1);
+		points.forEach(p => p.draw());
+	</script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>gradient-particles</title>
+</head>
+<body>
+	<script>
+		const randi = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
+		const rands = Math.random() < 0.5 ? -1 : 1;
+		const canvas = document.createElement('canvas');
+		const c = canvas.getContext('2d');
+		const parts = [];
+		class Color {
+			constructor(r, g, b, a) {
+				this.r = r;
+				this.g = g;
+				this.b = b;
+				this.a = a;
+			}
+			toString() {
+				return `rgba(${this.r}, ${this.g}, ${this.b}, ${this.a})`;
+			}
+		}
+		class Part {
+			constructor(x, y, r, vx, vy, c) {
+				this.x = x;
+				this.y = y;
+				this.r = r;
+				this.vx = vx;
+				this.vy = vy;
+				this.c = c;
+				this.dead = false;
+			}
+			tick() {
+				this.x += this.vx;
+				this.y += this.vy;
+				if (this.x + this.r < 0 ||
+					this.y + this.r < 0 ||
+					this.x - this.r > canvas.width ||
+					this.y - this.r > canvas.height ||
+					this.c.a < 0) this.dead = true
+				this.c.r = (this.x * 255) / canvas.width;
+				this.c.g = (this.y * 255) / canvas.height;
+				this.c.b = 144;
+			}
+			draw() {
+				c.fillStyle = this.c.toString();
+				c.fillRect(this.x, this.y, this.r, this.r);
+				// c.beginPath();
+				// c.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+				// c.fill();
+			}
+		}
+		let o = 0;
+		const loop = function() {
+			o += 0.01;
+			for (let i = 0; i < 360; i += 18) {
+				parts.push(new Part(
+					canvas.width / 2,
+					canvas.height / 2,
+					5,
+					Math.cos(i * Math.PI / 180 + o) * 2,
+					Math.sin(i * Math.PI / 180 + o) * 2,
+					new Color(0, 0, 0, 1),
+				));
+			}
+			c.fillStyle = 'black';
+			c.fillRect(0, 0, canvas.width, canvas.height);
+			for (let i = parts.length - 1; i >= 0; --i) {
+				const p = parts[i];
+				p.tick();
+				p.draw();
+				if (p.dead) parts.splice(i, 1);
+			}
+			requestAnimationFrame(loop);
+		}
+		canvas.width = 640;
+		canvas.height = 480;
+		document.body.append(canvas);
+		requestAnimationFrame(loop);
+	</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<input type="text" id="input" value="">
+<div id="buttons"></div>
+<script>
+const buttons = document.getElementById('buttons');
+function addButton(insides, does) {
+	const div = document.createElement('div');
+	const button = document.createElement('button');
+	button.innerHTML = insides;
+	button.onclick = does;
+	div.append(button);
+	buttons.append(div);
+}
+const input = document.getElementById('input');
+addButton('Reverse', function(){
+	const noo = input.value.split("").reverse().join("");
+	input.value = noo;
+});
+addButton('Lower', function(){
+	const noo = input.value.toLowerCase();
+	input.value = noo;
+});
+addButton('Upper', function(){
+	const noo = input.value.toUpperCase();
+	input.value = noo;
+});
+</script>

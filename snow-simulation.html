@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>snow-simulation</title>
+</head>
+<body>
+	<script>
+		const randi = (min, max) => Math.floor(Math.random() * (max - min) + min);
+		const canvas = document.createElement('canvas');
+		const c = canvas.getContext('2d');
+		const flakes = [];
+		class Snowflake {
+			constructor(x, y, r, vx, vy) {
+				this.x = x;
+				this.y = y;
+				this.r = r;
+				this.vx = vx;
+				this.vy = vy;
+				this.dead = false;
+			}
+			tick() {
+				this.x += this.vx;
+				this.y += this.vy;
+				if (this.x - this.r > canvas.width || this.y - this.r > canvas.height) this.dead = true;
+			}
+			draw() {
+				c.fillStyle = 'white';
+				c.beginPath();
+				c.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+				c.fill();
+			}
+		}
+		const loop = function() {
+			flakes.push(new Snowflake(
+				randi(0, canvas.width),
+				-10,
+				randi(1, 5),
+				Math.random(),
+				randi(5, 10)
+			));
+			c.fillStyle = 'black';
+			c.fillRect(0, 0, canvas.width, canvas.height);
+			for (let i = flakes.length - 1; i >= 0; --i) {
+				const f = flakes[i];
+				f.tick();
+				f.draw();
+				if (f.dead) flakes.splice(i, 1);
+			}
+			requestAnimationFrame(loop);
+		}
+		canvas.width = 640;
+		canvas.height = 480;
+		document.body.append(canvas);
+		loop();
+	</script>
+</body>
+</html>

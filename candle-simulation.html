@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>candle-simulation</title>
+</head>
+<body>
+	<script>
+		const randi = (min, max) => Math.floor(Math.random() * (max - min) + min);
+		const rands = () => Math.random() < 0.5 ? -1 : 1;
+		const canvas = document.createElement('canvas');
+		const c = canvas.getContext('2d');
+		const flames = [];
+		class Color {
+			constructor(r, g, b, a) {
+				this.r = r;
+				this.g = g;
+				this.b = b;
+				this.a = a;
+			}
+			toString() {
+				return `rgba(${this.r}, ${this.g}, ${this.b}, ${this.a})`;
+			}
+		}
+		class Flame {
+			constructor(x, y, r, vx, vy, c) {
+				this.x = x;
+				this.y = y;
+				this.r = r;
+				this.vx = vx;
+				this.vy = vy;
+				this.c = c;
+				this.dead = false;
+			}
+			tick() {
+				this.x += this.vx;
+				this.y += this.vy;
+				this.c.a -= 0.1;
+				if (this.c.a < 0) this.dead = true;
+			}
+			draw() {
+				c.fillStyle = this.c.toString();
+				c.fillRect(
+					this.x - this.r / 2,
+					this.y - this.r / 2,
+					this.r,
+					this.r);
+			}
+		}
+		const loop = function() {
+			for (let i = 0; i < 2; i++) {
+				flames.push(new Flame(
+					canvas.width / 2,
+					canvas.height / 2,
+					randi(10, 20),
+					Math.random() * rands(),
+					randi(1, 5) * -1,
+					new Color(255, randi(0, 255), 0, 1)
+				));
+			}
+			c.fillStyle = 'black';
+			c.fillRect(0, 0, canvas.width, canvas.height);
+			for (let i = flames.length - 1; i >= 0; --i) {
+				const f = flames[i];
+				f.tick();
+				f.draw();
+				if (f.dead) flames.splice(i, 1);
+			}
+			requestAnimationFrame(loop);
+		}
+		canvas.width = 640;
+		canvas.height = 480;
+		document.body.append(canvas);
+		loop();
+	</script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>platformer</title>
+</head>
+<body>
+	<!-- CLASSES -->
+	<script>
+		class Form {
+			constructor(x, y, w, h, c) {
+				this.x = x;
+				this.y = y;
+				this.w = w;
+				this.h = h;
+				this.c = c;
+			}
+			tick() {}
+			draw() {
+				c.fillStyle = this.c;
+				c.fillRect(this.x, this.y, this.w, this.h);
+			}
+		}
+		class Player {
+			constructor(x, y, w, h, c) {
+				this.x = x;
+				this.y = y;
+				this.w = w;
+				this.h = h;
+				this.c = c;
+				this.vx = 0;
+				this.vy = 0;
+				this.vm = 15;
+				this.acc = 1;
+				this.dec = this.acc;
+				this.cj = true;
+				this.j = 15;
+			}
+			tick() {
+				if (keys[39]) {
+					this.vx += this.acc;
+					if (this.vx > this.vm) this.vx = this.vm;
+				} else {
+					if (this.vx > 0) {
+						this.vx -= this.dec;
+						if (this.vx < 0) this.vx = 0;
+					}
+				}
+				if (keys[37]) {
+					this.vx -= this.acc;
+					if (this.vx < -this.vm) this.vx = -this.vm;
+				} else {
+					if (this.vx < 0) {
+						this.vx += this.dec;
+						if (this.vx > 0) this.vx = 0;
+					}
+				}
+				if ((keys[17] || keys[32]) && this.cj) {
+					this.cj = false;
+					this.vy -= this.j;
+				}
+				this.vy += 1;
+				this.x += this.vx;
+				this.y += this.vy;
+				forms.forEach(f => {
+					if (touching(this, f)) {
+						if (this.y + this.h > f.y) {
+							this.vy = 0;
+							this.y = f.y - this.h;
+							this.cj = true;
+						}
+					}
+				});
+			}
+			draw() {
+				c.fillStyle = this.c;
+				c.fillRect(this.x, this.y, this.w, this.h);
+			}
+		}
+	</script>
+	<script>
+		const touching = (r1, r2) => (r1.x < r2.x + r2.w && r1.x + r1.w > r2.x && r1.y < r2.y + r2.h && r1.y + r1.h > r2.y);
+		const randi = (min, max) => Math.floor(Math.random() * (max - min) + min + 1);
+		const canvas = document.createElement('canvas');
+		const c = canvas.getContext('2d');
+		const keys = [];
+		const forms = [];
+		const p = new Player(0, 0, 15, 15, 'lime');
+		for (let i = 0; i < 5; i++) {
+			forms.push(new Form(
+				i == 3 ? 0 : randi(0, canvas.width),
+				i * 100,
+				randi(canvas.width / 2, canvas.width),
+				10,
+				'white'
+			));
+		}
+		const loop = function() {
+			c.fillStyle = 'black';
+			c.fillRect(0, 0, canvas.width, canvas.height);
+			forms.forEach(f => {
+				f.tick();
+				f.draw();
+			});
+			p.tick();
+			p.draw();
+			requestAnimationFrame(loop);
+		}
+		window.onkeydown = ({keyCode}) => keys[keyCode] = true;
+		window.onkeyup = ({ keyCode }) => keys[keyCode] = false;
+		canvas.width = 640;
+		canvas.height = 480;
+		document.body.append(canvas);
+		requestAnimationFrame(loop);
+	</script>
+</body>
+</html>

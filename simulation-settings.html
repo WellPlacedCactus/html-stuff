@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>simulation-settings</title>
+	<style>
+		button {
+			width: 100px;
+			height: 30px;
+			font-family: monospace;
+		}
+	</style>
+</head>
+<body>
+	<script>
+		const randi = (min, max) => Math.floor(Math.random() * (max - min) + min);
+		const canvas = document.createElement('canvas');
+		const c = canvas.getContext('2d');
+		function addButton(text, func) {
+			const button = document.createElement('button');
+			button.innerHTML = text;
+			button.onclick = func;
+			document.body.append(button);
+		}
+		addButton('Clear', function() {
+			c.fillStyle = 'black';
+			c.fillRect(0, 0, canvas.width, canvas.height);
+		});
+		addButton('Draw', function() {
+			c.fillStyle = 'white';
+			for (let i = 0; i < 2; i++) {
+				c.fillRect(
+					randi(0, canvas.width),
+					randi(0, canvas.height),
+					10,
+					10
+				);
+			}
+		});
+		canvas.width = 640;
+		canvas.height = 480;
+		document.body.append(canvas);
+		c.fillStyle = 'black';
+		c.fillRect(0, 0, canvas.width, canvas.height);
+	</script>
+</body>
+</html>
